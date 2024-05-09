@@ -7,6 +7,7 @@
 
 from dataclasses import field, dataclass
 
+from functools import reduce
 from itertools import count
 from typing import List
 
@@ -38,7 +39,7 @@ class Product:
     name: str = field(default="")
     price: float = field(repr=False, default=0.0)
     stock: float = field(repr=False, default=0.0)
-    id: int = field(default_factory=id_gen)
+    id: int = field(init=False, default_factory=id_gen)
 
     def __str__(self) -> str:
         return f"{self.id}, {self.name}, {self.price}, {self.stock}"
@@ -66,32 +67,79 @@ class Product:
 class Inventory:
     products: List[Product] = field(default_factory=list)
 
-    def product_list(self):
-        if not self.products:
-            print("No hay productos para listar")
-        for product in self.products:
-            print(product)
-
     def create_product(self):
         new_product = Product.create_product()
         self.products.append(new_product)
-        print(f"Nuevo producto creado: {new_product}")
+        print(f"The new product has been created")
 
-    def product_update(self):
-        self.product_list()
-        try:
-            id = int(input("Id, del producto a actualizar: "))
-            product = [x for x in self.products if x.id == id]
-            updated_product = Product.update_product(product[0])
-        except IndexError:
-            print("El numero ingresado esta fuera de rango")
-        print(f"Producto actualizado")
+    def read_products(self):
+        if not self.products:
+            print("There are no products for the list")
+        for product in self.products:
+            print(product)
+
+    def update_product(self):
+        while True:
+            try:
+                id = int(input("Id, of the product to update: "))
+                product = [x for x in self.products if x.id == id][0]
+                break
+            except:
+                print("The Id does not exist")
+
+        Product.update_product(product)
+        print(f"The product has been updated")
+
+    def delete_product(self):
+        while True:
+            try:
+                id = int(input("Id Product for remove: "))
+                product = [x for x in self.products if x.id == id][0]
+                break
+            except:
+                print("The Id does not exist")
+
+        self.products.remove(product)
+        print(f"The product has been removed")
+
+    def total_stock(self):
+        total_stock = reduce((lambda x, y: x + y), [x.stock for x in self.products])
+        print(f"Total Stock: {total_stock}")
+        return total_stock
 
 
 @dataclass
 class Main:
+    def menu(cls):
+        inventory = Inventory()
+        while True:
+            print("\n     Menu ")
+            print("1. Create product")
+            print("2. Read products")
+            print("3. Update product")
+            print("4. Delete product")
+            print("5. Inventory Total")
+            print("6. Salir")
+            choice = int(input("Option: "))
 
-    inv = Inventory()
-    inv.create_product()
-    inv.product_update()
-    inv.product_list()
+            if choice == 1:
+                inventory.create_product()
+            elif choice == 2:
+                inventory.read_products()
+            elif choice == 3:
+                inventory.read_products()
+                inventory.update_product()
+            elif choice == 4:
+                inventory.read_products()
+                inventory.delete_product()
+            elif choice == 5:
+                inventory.total_stock()
+            elif choice == 6:
+                break
+            else:
+                print("Wrong Option")
+
+
+if __name__ == "__main__":
+    main = Main()
+    main.menu()
