@@ -6,16 +6,18 @@
    - Implementa una clase `SistemaReservas` que gestione una lista de vuelos y reservas, y permita a los usuarios realizar reservas, cancelarlas y ver los vuelos disponibles.
 """
 
+from dataclasses import dataclass
 
+
+@dataclass
 class Vuelo:
-    def __init__(self) -> None:
-        self.no_vuelo = None
-        self.origen = None
-        self.destino = None
-        self.fecha = None
-        self.hora_salida = None
-        self.hora_llegada = None
-        self.no_asientos = None
+    no_vuelo = None
+    origen = None
+    destino = None
+    fecha = None
+    hora_salida = None
+    hora_llegada = None
+    no_asientos = None
 
     def set_no_vuelo(self, no_vuelo):
         self.no_vuelo = no_vuelo
@@ -38,14 +40,18 @@ class Vuelo:
     def set_no_asientos(self, no_asientos):
         self.no_asientos = no_asientos
 
-    def create_vuelo(self):
-        self.set_no_vuelo(input("No vuelo: "))
-        self.set_origen(input("Origen: "))
-        self.set_destino(input("Destino: "))
-        self.set_fecha(input("Fecha: "))
-        self.set_hora_salida(input("Hora salida: "))
-        self.set_hora_llegada(input("Hora llegada: "))
-        self.set_no_asientos(input("No asientos: "))
+    @classmethod
+    def create_vuelo(cls, value):
+        no_vuelo = value.set_no_vuelo(input("No vuelo: "))
+        origen = value.set_origen(input("Origen: "))
+        destino = value.set_destino(input("Destino: "))
+        fecha = value.set_fecha(input("Fecha: "))
+        hora_salida = value.set_hora_salida(input("Hora salida: "))
+        hora_llegada = value.set_hora_llegada(input("Hora llegada: "))
+        no_asientos = value.set_no_asientos(input("No asientos: "))
+        return cls(
+            no_vuelo, origen, destino, fecha, hora_salida, hora_llegada, no_asientos
+        )
 
     def create_vuelos(self):
         num_vuelos = int(input("ingrese el numero de vuelos:"))
@@ -98,7 +104,7 @@ class SistemaReservas:
 
 
 vuelo = Vuelo()
-vuelo.create_vuelos()
+vuelo.create_vuelos(vuelo)
 print(vuelo)
 # vuelo.imprime_vuelo()
 # sistema_reservas = SistemaReservas()
