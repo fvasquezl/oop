@@ -16,7 +16,6 @@ class Vuelo:
         self.hora_salida = None
         self.hora_llegada = None
         self.no_asientos = None
-        self.vuelos = []
 
     def set_no_vuelo(self, no_vuelo):
         self.no_vuelo = no_vuelo

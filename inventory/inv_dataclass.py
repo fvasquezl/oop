@@ -67,22 +67,25 @@ class Product:
 class Inventory:
     products: List[Product] = field(default_factory=list)
 
-    def create_product(self):
+    @classmethod
+    def create_product(cls, values):
         new_product = Product.create_product()
-        self.products.append(new_product)
+        products = values.products.append(new_product)
         print(f"The new product has been created")
 
-    def read_products(self):
-        if not self.products:
+    @classmethod
+    def read_products(cls, values):
+        if not values.products:
             print("There are no products for the list")
-        for product in self.products:
+        for product in values.products:
             print(product)
 
-    def update_product(self):
+    @classmethod
+    def update_product(cls, values):
         while True:
             try:
                 id = int(input("Id, of the product to update: "))
-                product = [x for x in self.products if x.id == id][0]
+                product = [x for x in values.products if x.id == id][0]
                 break
             except:
                 print("The Id does not exist")
@@ -90,20 +93,22 @@ class Inventory:
         Product.update_product(product)
         print(f"The product has been updated")
 
-    def delete_product(self):
+    @classmethod
+    def delete_product(self, values):
         while True:
             try:
                 id = int(input("Id Product for remove: "))
-                product = [x for x in self.products if x.id == id][0]
+                product = [x for x in values.products if x.id == id][0]
                 break
             except:
                 print("The Id does not exist")
 
-        self.products.remove(product)
+        values.products.remove(product)
         print(f"The product has been removed")
 
-    def total_stock(self):
-        total_stock = reduce((lambda x, y: x + y), [x.stock for x in self.products])
+    @classmethod
+    def total_stock(self, values):
+        total_stock = reduce((lambda x, y: x + y), [x.stock for x in values.products])
         print(f"Total Stock: {total_stock}")
         return total_stock
 
@@ -123,17 +128,17 @@ class Main:
             choice = int(input("Option: "))
 
             if choice == 1:
-                inventory.create_product()
+                inventory.create_product(inventory)
             elif choice == 2:
-                inventory.read_products()
+                inventory.read_products(inventory)
             elif choice == 3:
-                inventory.read_products()
-                inventory.update_product()
+                inventory.read_products(inventory)
+                inventory.update_product(inventory)
             elif choice == 4:
-                inventory.read_products()
-                inventory.delete_product()
+                inventory.read_products(inventory)
+                inventory.delete_product(inventory)
             elif choice == 5:
-                inventory.total_stock()
+                inventory.total_stock(inventory)
             elif choice == 6:
                 break
             else:

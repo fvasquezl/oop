@@ -7,16 +7,19 @@
 
 from decimal import Decimal
 from typing import Annotated
-from pydantic import BaseModel, Field
+import uuid
+from pydantic import BaseModel, Field, computed_field
+from pydantic.dataclasses import dataclass
 
 
 PositiveInt = Annotated[int, Field(gt=0)]
 
 
+@dataclass
 class Product(BaseModel):
-    name: str = Field(max_digits=2)
+    name: str = Field(min_length=2)
     price: Decimal = Field(max_digits=5, decimal_places=2)
-    # id: PositiveInt
+    id: uuid.UUID
 
 
 foo = Product(name="faustino", price=Decimal("123.45"))
