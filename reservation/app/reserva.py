@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 import itertools
+from typing import Optional
 from .vuelo import Vuelo
 from random import randint
 
@@ -22,9 +23,8 @@ class Reserva:
     def __repr__(self) -> str:
         return f"\nNo Reservacion: {self.no_reservacion}\nPasajero: {self.pasajero}\nAsiento: {self.asiento}\nVuelo: {self.vuelo}"
 
-    @classmethod
-    def create_reservation(cls):
-        pasajero = input("Nombre del pasajero:")
+    @staticmethod
+    def get_vuelo() -> Optional[Vuelo]:
         while True:
             try:
                 no_vuelo = int(input("Vuelo seleccionado: "))
@@ -44,7 +44,12 @@ class Reserva:
                     )
             except ValueError as e:
                 print("Por favor ingrese el No del Vuelo")
+        return vuelo
 
+    @classmethod
+    def create_reservation(cls):
+        pasajero = input("Nombre del pasajero:")
+        vuelo = cls.get_vuelo()
         asiento = randint(1, int(vuelo.no_asientos))
 
         return cls(pasajero, vuelo, asiento)
