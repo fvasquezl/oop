@@ -17,9 +17,11 @@ class Main:
     def menu():
         options = {
             1: "Lista de vuelos",
-            2: "Crear reservacion",
-            3: "Cancelar reservacion",
-            4: "Salir",
+            2: "Lista de reservas",
+            3: "Crear reservacion",
+            4: "Cancelar reservacion",
+            5: "Vuelos disponibles",
+            6: "Salir",
         }
         while True:
             print("\nMenu Principal:")
@@ -28,7 +30,7 @@ class Main:
             try:
                 choice = int(input("Opcion Seleccionada:"))
                 if choice in options:
-                    if choice == 4:
+                    if choice == 6:
                         print("Hasta la vista Baby!")
                         break
                     else:
@@ -36,9 +38,8 @@ class Main:
                             Vuelo.mostrar_vuelos()
                         elif choice == 2:
                             print("Crea Reservacion")
-                            reservation = Reserva.reservation()
-                            print(asdict(reservation))
-
+                            reservation = Reserva.create_reservation()
+                            print(reservation)
                         elif choice == 3:
                             print("Cancela Reservacion")
                 else:

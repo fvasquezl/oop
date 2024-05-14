@@ -14,6 +14,9 @@ class Vuelo:
 
     vuelos: ClassVar[List["Vuelo"]] = []
 
+    def __repr__(self) -> str:
+        return f"No vuelo: {self.no_vuelo}, Origen: {self.origen}, Destino: {self.destino}, Fecha: {self.fecha}, Salida: {self.hora_salida}, Llegada: {self.hora_llegada}, No asiento: {self.no_asientos}"
+
     @classmethod
     def agregar_vuelo(cls, vuelo):
         cls.vuelos.append(vuelo)
@@ -58,6 +61,3 @@ class Vuelo:
         return cls(
             no_vuelo, origen, destino, fecha, hora_salida, hora_llegada, no_asientos
         )
-
-    # def __repr__(self) -> str:
-    #     return asdict(Vuelo)
