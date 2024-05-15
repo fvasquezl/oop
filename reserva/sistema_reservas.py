@@ -73,10 +73,8 @@ class SistemaReservas:
         # Crear un diccionario para almacenar los pasajeros por vuelo
         pasajeros_por_vuelo = defaultdict(list)
         for vuelo in s_reservas.vuelos:
-            if vuelo in s_reservas.vuelos:
-                print("yes")
-            else:
-                print("noo")
+            for reservacion in s_reservas.reservaciones:
+                print(reservacion.vuelo)
 
         # Iterar sobre las reservaciones y agruparlas por vuelo
         # for reservacion in s_reservas.reservaciones:
@@ -129,7 +127,7 @@ if __name__ == "__main__":
         no_asientos=100,
     )
 
-    sistema_reservas = SistemaReservas([vuelo1, vuelo2])
+    sistema_reservas = SistemaReservas([vuelo1, vuelo2, vuelo3])
 
     # # Crear reservaciones
     reservacion1 = sistema_reservas.create_reservation(
