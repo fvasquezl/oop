@@ -14,25 +14,9 @@ class SistemaReservas:
     vuelos: List[Vuelo] = field(default_factory=list)
     reservaciones: List[Reserva] = field(default_factory=list)
 
-    @classmethod
-    def create_reservation(
-        cls, pasajero: str, vuelo: Vuelo, s_reservas: "SistemaReservas"
-    ) -> Reserva:
-        asiento = randint(1, vuelo.no_asientos)
-        reservacion = Reserva(pasajero=pasajero, vuelo=vuelo, asiento=asiento)
-        s_reservas.reservaciones.append(reservacion)
-        vuelo.no_asientos -= 1
-        return reservacion
-
-    @classmethod
-    def get_reservaciones_por_vuelo(
-        cls, vuelo: Vuelo, s_reservas: "SistemaReservas"
-    ) -> List[Reserva]:
-        reservaciones_vuelo = []
-        for reservacion in s_reservas.reservaciones:
-            if reservacion.vuelo == vuelo:
-                reservaciones_vuelo.append(reservacion)
-        return reservaciones_vuelo
+    """
+    Este Metodo obtiene una lista de todos los vuelo que se tienen registrados
+    """
 
     @classmethod
     def get_todos_los_vuelos(cls, s_reservas: "SistemaReservas") -> List[Vuelo]:
@@ -44,6 +28,24 @@ class SistemaReservas:
             data.append(list(asdict(vuelo).values()))
 
         print(tabulate(data, headers=headers))
+
+    """
+    Este Metodo crea una reervacion automaticamente pasando los datos de pasajero y vuelo
+    """
+
+    @classmethod
+    def create_reservation(
+        cls, pasajero: str, vuelo: Vuelo, s_reservas: "SistemaReservas"
+    ) -> Reserva:
+        asiento = randint(1, vuelo.no_asientos)
+        reservacion = Reserva(pasajero=pasajero, vuelo=vuelo, asiento=asiento)
+        s_reservas.reservaciones.append(reservacion)
+        vuelo.no_asientos -= 1
+        return reservacion
+
+    """
+    Este Metodo pregunta por los datos de pasajero y vuelo y con ellos crea una reservacion
+    """
 
     @classmethod
     def crear_reservacion_manual(cls, s_reservas: "SistemaReservas") -> None:
@@ -68,90 +70,83 @@ class SistemaReservas:
         else:
             print(f"No se encontró un vuelo con el número {no_vuelo}.")
 
+    """
+    Este Metodo obtiene una lista de todas las reservaciones que hay en un vuelo
+    """
+
+    @classmethod
+    def get_reservaciones_por_vuelo(
+        cls, vuelo: Vuelo, s_reservas: "SistemaReservas"
+    ) -> List[Reserva]:
+        reservaciones_vuelo = []
+        for reservacion in s_reservas.reservaciones:
+            if reservacion.vuelo == vuelo:
+                reservaciones_vuelo.append(reservacion)
+        return reservaciones_vuelo
+
+    """
+    Este metodo lista las reservaciones que tiene cada vuelo
+    """
+
     @classmethod
     def listar_reservaciones_por_vuelo(cls, s_reservas: "SistemaReservas") -> None:
         # Crear un diccionario para almacenar los pasajeros por vuelo
-        pasajeros_por_vuelo = defaultdict(list)
         for vuelo in s_reservas.vuelos:
-            for reservacion in s_reservas.reservaciones:
-                print(reservacion.vuelo)
+            reservaciones_vuelo = cls.get_reservaciones_por_vuelo(
+                vuelo=vuelo, s_reservas=s_reservas
+            )
+            if reservaciones_vuelo:
+                print(f"\nVuelo {vuelo.no_vuelo}: {vuelo.origen} -> {vuelo.destino}")
+                headers = ["Pasajero", "Asiento"]
+                data = [[r.pasajero, r.asiento] for r in reservaciones_vuelo]
+                print(tabulate(data, headers=headers))
+            else:
+                print(f"\nEl vuelo {vuelo.no_vuelo} aún no tiene pasajeros.")
 
-        # Iterar sobre las reservaciones y agruparlas por vuelo
-        # for reservacion in s_reservas.reservaciones:
-        #     # print(reservacion.vuelo.no_vuelo)
-        #     pasajeros_por_vuelo[
-        #         (
-        #             reservacion.vuelo.no_vuelo,
-        #             reservacion.vuelo.origen,
-        #             reservacion.vuelo.destino,
-        #         )
-        #     ].append(reservacion.pasajero)
+    @classmethod
+    def create_vuelo_manual(
+        cls,
+        s_reservas: "SistemaReservas",
+    ) -> "Vuelo":
+        try:
+            no_vuelo = int(input("Ingrese el No de Vuelo: "))
+            origen = input("Ingrese el origen: ")
+            destino = input("Ingrese el destino: ")
+            fecha_salida = datetime.strptime(
+                input("Ingrese la fecha de Salida (YYYY-MM-DD HH:MM): "),
+                "%Y-%m-%d %H:%M",
+            )
+            fecha_llegada = datetime.strptime(
+                input("Ingrese la fecha de llegada (YYYY-MM-DD HH:MM): "),
+                "%Y-%m-%d %H:%M",
+            )
+            no_asientos = int(input("Ingrese el No de asientos: "))
 
-        # # # Imprimir los vuelos y sus pasajeros
-        # for vuelo_info, pasajeros in pasajeros_por_vuelo.items():
-        #     no_vuelo, origen, destino = vuelo_info
-        #     print(f"Vuelo {no_vuelo}: {origen} -> {destino}")
-        #     print("\nPasajeros:")
-        #     headers = ["Nombre"]
-        #     data = [[pasajero] for pasajero in pasajeros]
-        #     print(tabulate(data, headers=headers, tablefmt="grid"))
-        #     print()
+            vuelo = Vuelo(
+                no_vuelo=no_vuelo,
+                origen=origen,
+                destino=destino,
+                fecha_salida=fecha_salida,
+                fecha_llegada=fecha_llegada,
+                no_asientos=no_asientos,
+            )
+
+            vuelo = s_reservas.vuelos.append(vuelo)
+            return vuelo
+
+        except ValueError:
+            print("Hubo un error en los datos. Por favor, revise las entradas.")
+            return None
 
 
 if __name__ == "__main__":
 
-    vuelo1 = Vuelo.create_vuelo(
-        no_vuelo=1234,
-        origen="Ciudad de México",
-        destino="Cancún",
-        fecha_salida=datetime(2023, 6, 1, 8, 0),
-        fecha_llegada=datetime(2023, 6, 1, 10, 30),
-        no_asientos=150,
-    )
+    sistema_reservas = SistemaReservas()
 
-    vuelo2 = Vuelo.create_vuelo(
-        no_vuelo=5678,
-        origen="Cancún",
-        destino="Monterrey",
-        fecha_salida=datetime(2023, 6, 2, 12, 0),
-        fecha_llegada=datetime(2023, 6, 2, 14, 30),
-        no_asientos=100,
-    )
+    vuelo2 = sistema_reservas.create_vuelo_manual(sistema_reservas)
 
-    vuelo3 = Vuelo.create_vuelo(
-        no_vuelo=9876,
-        origen="Tijuana",
-        destino="Puebla",
-        fecha_salida=datetime(2023, 6, 3, 12, 0),
-        fecha_llegada=datetime(2023, 6, 3, 14, 30),
-        no_asientos=100,
-    )
+    vuelos = SistemaReservas.get_todos_los_vuelos(sistema_reservas)
 
-    sistema_reservas = SistemaReservas([vuelo1, vuelo2, vuelo3])
-
-    # # Crear reservaciones
-    reservacion1 = sistema_reservas.create_reservation(
-        "Juan Pérez", vuelo1, sistema_reservas
-    )
-    reservacion2 = sistema_reservas.create_reservation(
-        "María González", vuelo2, sistema_reservas
-    )
-    reservacion3 = sistema_reservas.create_reservation(
-        "Faustino Vasquez", vuelo1, sistema_reservas
-    )
-
-    # print(reservacion1)
-    # print(reservacion2)
-
-    # vuelos = SistemaReservas.get_todos_los_vuelos(sistema_reservas)
-
-    # SistemaReservas.crear_reservacion_manual(sistema_reservas)
+    SistemaReservas.crear_reservacion_manual(sistema_reservas)
 
     SistemaReservas.listar_reservaciones_por_vuelo(sistema_reservas)
-
-    # reservaciones_vuelo1 = SistemaReservas.get_reservaciones_por_vuelo(
-    #     vuelo1, sistema_reservas
-    # )
-    # print(f"Reservaciones para el vuelo {vuelo1.no_vuelo}")
-    # for reservacion in reservaciones_vuelo1:
-    #     print(reservacion)
