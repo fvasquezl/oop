@@ -142,6 +142,7 @@ class SistemaReservas:
 if __name__ == "__main__":
 
     sistema_reservas = SistemaReservas()
+    
 
     vuelo2 = sistema_reservas.create_vuelo_manual(sistema_reservas)
 
