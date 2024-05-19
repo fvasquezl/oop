@@ -6,10 +6,8 @@
 """
 
 from dataclasses import asdict, field, dataclass
-
 from itertools import count
-from typing import Annotated, List
-
+from typing import List
 from tabulate import tabulate
 
 id_gen = count(start=100, step=1).__next__
@@ -43,14 +41,21 @@ class Inventory:
         product = Product(name=name, price=price, stock=stock)
         return product
 
-    @classmethod
-    def add_products(cls, c_inv) -> Product:
-        product = cls.create_product()
-        c_inv.products.append(product)
+    @staticmethod
+    def update_product(product) -> Product:
+        name = input(f"Name ({product.name}): ")
+        if name:
+            product.name = name
+        price = input(f"Price ({product.price}): ")
+        if price:
+            product.price = float(price)
+        stock = input(f"Stock ({product.stock}): ")
+        if stock:
+            product.stock = float(stock)
         return product
 
     @classmethod
-    def list_products(cls, c_inv) -> List[Product]:
+    def list_products(cls, c_inv) -> None:
         headers = []
         data = []
         total_stock = 0
@@ -63,21 +68,81 @@ class Inventory:
         print("_____________")
         print(f"Total Stock: {total_stock}")
 
-    def remove_products():
-        pass
+    @classmethod
+    def create_products(cls, c_inv) -> None:
+        try:
+            product = cls.create_product()
+            c_inv.products.append(product)
+        except ValueError:
+            print("El valor ingresado es incorrecto")
 
-    def update_products():
-        pass
+    @classmethod
+    def update_products(cls, c_inv) -> None:
+        try:
+            id = int(input("Producto a actualizar: "))
+            product = next((x for x in c_inv.products if x.id == id), None)
+            if product:
+                cls.update_product(product)
+                print(f"El producto {id} ha sido actualizado")
+            else:
+                print("El productos seleccionado no existe")
+        except ValueError:
+            print("El valor ingresado es incorrecto")
 
-    def total_inventory():
-        pass
+    @classmethod
+    def remove_products(cls, c_inv) -> None:
+        try:
+            id = int(input("Producto a eliminar: "))
+            product = next((x for x in c_inv.products if x.id == id), None)
+            if product:
+                c_inv.products.remove(product)
+                print(f"El producto {id} ha sido elimnado")
+            else:
+                print("El productos seleccionado no existe")
+        except ValueError:
+            print("El valor ingresado es incorrecto")
+
+
+@dataclass
+class Main:
+    inventory = Inventory()  # Variable de clase
+
+    @staticmethod
+    def menu():
+        options = {
+            1: "Lista de productos",
+            2: "Crear Productos",
+            3: "Actualizar Productos",
+            4: "Eliminar Productos",
+            5: "Salir",
+        }
+        actions = {
+            1: Main.inventory.list_products,
+            2: Main.inventory.create_products,
+            3: Main.inventory.update_products,
+            4: Main.inventory.remove_products,
+        }
+        while True:
+            print("\nMenu Principal:")
+            for option, description in options.items():
+                print(f"[{option}] {description}")
+            try:
+                choice = int(input("Opcion Seleccionada:"))
+                if choice in options:
+                    if choice == 5:
+                        print("Hasta la vista Baby!")
+                        break
+                    else:
+                        actions[choice](Main.inventory)
+                else:
+                    print("La opcion seleccionada es invalida")
+
+            except ValueError as e:
+                print("Please enter a valid number.")
+            except Exception as e:
+                print(repr(e))
 
 
 if __name__ == "__main__":
 
-    p1 = Product("product1", 16, 30)
-    p2 = Product("product2", 15, 109)
-    p3 = Product("product3", 14, 50)
-    inv = Inventory(products=[p1, p2, p3])
-    # inv.add_products(inv)
-    inv.list_products(inv)
+    Main.menu()
